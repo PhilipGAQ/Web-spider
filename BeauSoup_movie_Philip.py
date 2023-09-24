@@ -23,7 +23,7 @@ headers = {
 
 
 # open the file to read and to save
-with open("Movie_id.csv", mode="r") as movielist:
+with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
     # read the file
     csv_reader = csv.reader(movielist)
     for row in csv_reader:
@@ -34,17 +34,63 @@ with open("Movie_id.csv", mode="r") as movielist:
         # print(url)
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
-        span_element = soup.find("span", class_="all hidden")
-        if span_element is not None:
-            print(span_element.text)
-            # 将爬到的数据存入字典
-            movie["plot"] = span_element.text
+        # 读取title year director genre rating plot cast duration
 
-            # 使用.text属性获取<span>元素中的文本内容
+        # title
+        title = soup.find("span", attrs={"property": "v:itemreviewed"})
+        print(title.text)
+
+        movie["title"] = str(title.text)
+
+        # year
+        year = soup.find("span", attrs={"class": "year"})
+        print(year.text)
+
+        movie["year"] = (str(year.text))[1:-1]
+
+        # director
+        director = soup.find("a", attrs={"rel": "v:directedBy"})
+        print(director.text)
+
+        movie["director"] = str(director.text)
+
+        # genre
+        genre = soup.find_all("span", attrs={"property": "v:genre"})
+        genre_text = [span.text for span in genre]
+        print(genre_text)
+        movie["genre"] = str(genre_text)
+
+        # rating
+        rating = soup.find("strong", attrs={"class": "ll rating_num"})
+        print(rating.text)
+
+        movie["rating"] = str(rating.text)
+
+        # plot
+        plot = soup.find("span", class_="all hidden")
+        if plot is not None:
+            print(plot.text)
+            movie["plot"] = str(plot.text)
+
         else:
-            # print("Couldn't find intro, whose url=", url_tail)
-            span_element = soup.find("span", attrs={"property": "v:summary"})
-            if span_element is not None:
-                print(span_element.text)
+            plot = soup.find("span", attrs={"property": "v:summary"})
+            if plot is not None:
+                print(plot.text)
             else:
                 print("Couldn't find intro, whose url=", url_tail)
+        # cast
+        cast = soup.find_all("a", attrs={"rel": "v:starring"})
+        cast = [span.text for span in cast]
+        print(cast)
+
+        movie["cast"] = str(cast)
+
+        # duration
+        duration = soup.find("span", attrs={"property": "v:runtime"})
+        print(duration.text)
+        movie["duration"] = str(duration.text)
+
+        # save the movie
+        with open("Movies_Philip.json", "a", encoding="utf-8") as json_file:
+            json.dump(movie, json_file, indent=4, ensure_ascii=False)
+            json_file.write(",\n")
