@@ -51,6 +51,7 @@ def assign_none(movie):
 # open the file to read and to save
 with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
     # read the file
+    open("Movies_Philip.json", "w").close()
     csv_reader = csv.reader(movielist)
     for row in csv_reader:
         # get the full url
