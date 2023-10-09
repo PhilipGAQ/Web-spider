@@ -208,6 +208,24 @@ with open("Book_id.csv", mode="r", encoding="utf-8") as booklist:
             book["writer-intro"] = None
             print("Couldn't find writer-intro, whose url=", url_tail)
 
+        # id_recommendations
+        patten = r"\d+/"
+        recommendations = soup.find("div", attrs={"class": "clearfix"})
+        if recommendations is None:
+            book["id_recommendations"] = None
+        else:
+            dd_tags = recommendations.find_all("dd")
+            id_recommendations = []
+            # 遍历每个<a>标签，获取其href属性
+            for dd_tag in dd_tags:
+                a_tag = dd_tag.find("a")
+                href = a_tag["href"]
+                match = re.search(patten, href)
+                if match:
+                    id_recommendations.append(match.group()[:-1])
+            print(id_recommendations)
+            book["id_recommendations"] = str(id_recommendations)
+
         # save the book
         with open("Books_Philip.json", "a", encoding="utf-8") as json_file:
             json.dump(book, json_file, indent=4, ensure_ascii=False)
