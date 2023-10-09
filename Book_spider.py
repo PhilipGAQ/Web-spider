@@ -10,6 +10,7 @@ book = {
     "writer": "Antoine de Saint-Exupéry",
     "translator":"马振聘",
     "publisher": "人民文学出版社",
+    "date": "2003-8",
     "Original title": "Le Petit Prince",
     "page": 97,
     "price": "22.00元",
@@ -36,6 +37,7 @@ def assign_none(book):
     "writer": None,
     "translator":None,
     "publisher": None,
+    "date": None,
     "Original title": None,
     "page": None,
     "price": None,
@@ -98,9 +100,23 @@ with open("Book_id.csv", mode="r", encoding="utf-8") as booklist:
             book["publisher"] = None
         else:
             publisher = publisher.find_next_sibling("a")
-            print(publisher.text)
-            book["publisher"] = str(publisher.text)
+            if publisher is None:
+                publisher = soup.find("span", attrs={"class": "pl"}, text="出版社:").next_sibling.strip()
+                print(publisher)
+                book["publisher"] = str(publisher)
+            else:
+                print(publisher.text)
+                book["publisher"] = str(publisher.text)
 
+        # date
+        date = soup.find("span", attrs={"class": "pl"}, text="出版年:")
+        if date is None:
+            book["date"] = None
+        else:
+            date = date.next_sibling.strip()
+            print(date)
+            book["date"] = str(date)
+        
         # Original title
         Original_title = soup.find("span", attrs={"class": "pl"}, text="原作名:")
         if Original_title is None:
@@ -156,38 +172,41 @@ with open("Book_id.csv", mode="r", encoding="utf-8") as booklist:
 
         # plot
         plot_ex=soup.find("div", attrs={"class": "indent", "id": "link-report"})
-        plot = plot_ex.find("span", class_="all hidden")
-        if plot is not None:
-            print(plot.text)
-            book["plot"] = str(plot.text)
+        if plot_ex is None:
+            book["plot"] = None
         else:
-            plot_ex=soup.find("div", attrs={"class": "indent", "id": "link-report"})
-            plot = plot_ex.find("div", class_="intro")
+            plot = plot_ex.find("span", class_="all hidden")
             if plot is not None:
                 print(plot.text)
                 book["plot"] = str(plot.text)
             else:
-                print("Couldn't find intro, whose url=", url_tail)
+                plot = plot_ex.find("div", class_="intro")
+                if plot is not None:
+                    print(plot.text)
+                    book["plot"] = str(plot.text)
+                else:
+                    book["plot"] = None
+                    print("Couldn't find intro, whose url=", url_tail)
 
         # writer-intro
-
-        # id_recommendations
-        patten = r"\d+/"
-        recommendations_bd = soup.find("div", attrs={"class": "recommendations-bd"})
-        if recommendations_bd is None:
-            book["id_recommendations"] = None
+        writer_ex = soup.find_all("div", attrs={"class": "indent","id": not"link-report"})
+        if writer_ex is None:
+            book["writer-intro"] = None
+        for ex in writer_ex:
+            writer_intro = ex.find("span", class_="all hidden")
+            if writer_intro is not None:
+                print(writer_intro.text)
+                book["writer-intro"] = str(writer_intro.text)
+                break
+            else:
+                writer_intro = ex.find("div", class_="intro")
+                if writer_intro is not None:
+                    print(writer_intro.text)
+                    book["writer-intro"] = str(writer_intro.text)
+                    break
         else:
-            dd_tags = recommendations_bd.find_all("dd")
-            id_recommendations = []
-            # 遍历每个<a>标签，获取其href属性
-            for dd_tag in dd_tags:
-                a_tag = dd_tag.find("a")
-                href = a_tag["href"]
-                match = re.search(patten, href)
-                if match:
-                    id_recommendations.append(match.group()[:-1])
-            print(id_recommendations)
-            book["id_recommendations"] = str(id_recommendations)
+            book["writer-intro"] = None
+            print("Couldn't find writer-intro, whose url=", url_tail)
 
         # save the book
         with open("Books_Philip.json", "a", encoding="utf-8") as json_file:
