@@ -173,11 +173,11 @@ with open("Book_id.csv", mode="r", encoding="utf-8") as booklist:
 
         # id_recommendations
         patten = r"\d+/"
-        recommendations_bd = soup.find("div", attrs={"class": "recommendations-bd"})
-        if recommendations_bd is None:
+        recommendations = soup.find("div", attrs={"class": "clearfix"})
+        if recommendations is None:
             book["id_recommendations"] = None
         else:
-            dd_tags = recommendations_bd.find_all("dd")
+            dd_tags = recommendations.find_all("dd")
             id_recommendations = []
             # 遍历每个<a>标签，获取其href属性
             for dd_tag in dd_tags:
