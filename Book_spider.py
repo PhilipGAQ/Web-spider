@@ -6,6 +6,8 @@ import json
 
 # 为书籍创建一个json字典
 book = {
+    "num":0,
+    "id": "114514",
     "title": "The little prince",
     "writer": "Antoine de Saint-Exupéry",
     "translator":"马振聘",
@@ -54,6 +56,7 @@ with open("Book_id.csv", mode="r", encoding="utf-8") as booklist:
     # read the file
     open("Books_Philip.json", "w").close()
     csv_reader = csv.reader(booklist)
+    cnt=1
     for row in csv_reader:
         # get the full url
         url_head = "https://book.douban.com/subject/"
@@ -63,12 +66,17 @@ with open("Book_id.csv", mode="r", encoding="utf-8") as booklist:
         response = requests.get(url, headers=headers,cookies=cookies)
         soup = BeautifulSoup(response.text, "html.parser")
         # 读取title year director genre rating plot cast duration
-
+        book["num"] = cnt
+        book["id"] = url_tail[2:-2]
         # title
         title = soup.find("span", attrs={"property": "v:itemreviewed"})
         if title is None:
             assign_none(book)
             print(str(row) + " is None")
+            cnt+=1
+            with open("Books_Philip.json", "a", encoding="utf-8") as json_file:
+                json.dump(book, json_file, indent=4, ensure_ascii=False)
+                json_file.write(",\n")
             continue
         else: 
             print(title.text)
@@ -225,6 +233,8 @@ with open("Book_id.csv", mode="r", encoding="utf-8") as booklist:
                     id_recommendations.append(match.group()[:-1])
             print(id_recommendations)
             book["id_recommendations"] = str(id_recommendations)
+        
+        cnt+=1
 
         # save the book
         with open("Books_Philip.json", "a", encoding="utf-8") as json_file:
