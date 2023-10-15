@@ -6,6 +6,8 @@ import json
 
 # 为电影创建一个json字典
 movie = {
+    "num": "1",  # 电影编号，从1开始
+    "id": "1292052",
     "title": "The Shawshank Redemption",
     "year": 1994,
     "director": "Frank Darabont",
@@ -53,6 +55,7 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
     # read the file
     open("Movies_Philip.json", "w").close()
     csv_reader = csv.reader(movielist)
+    cnt=1
     for row in csv_reader:
         # get the full url
         url_head = "https://movie.douban.com/subject/"
@@ -62,12 +65,17 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
         response = requests.get(url, headers=headers,cookies=cookies)
         soup = BeautifulSoup(response.text, "html.parser")
         # 读取title year director genre rating plot cast duration
-
+        movie["num"] = cnt
+        movie["id"] = url_tail[2:-2]
         # title
         title = soup.find("span", attrs={"property": "v:itemreviewed"})
         if title is None:
             assign_none(movie)
             print(str(row) + " is None")
+            cnt+=1
+            with open("Movies_Philip.json", "a", encoding="utf-8") as json_file:
+                json.dump(movie, json_file, indent=4, ensure_ascii=False)
+                json_file.write(",\n")
             continue
         else: 
             print(title.text)
@@ -190,6 +198,7 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
             print(id_recommendations)
             movie["id_recommendations"] = str(id_recommendations)
 
+        cnt+=1
         # save the movie
         with open("Movies_Philip.json", "a", encoding="utf-8") as json_file:
             json.dump(movie, json_file, indent=4, ensure_ascii=False)
