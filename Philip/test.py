@@ -1,15 +1,16 @@
 import json
 
-with open('Books_Philip.json', 'r',encoding="utf-8") as f:
+with open("Movies_Philip.json", "r", encoding="utf-8") as f:
     data = json.load(f)
 
-books={
-    "id": "1046265",
-    "title": "挪威的森林"
+movies = {
+    "id": "1292052",
+    "title": "肖申克的救赎 The Shawshank Redemption",
 }
-with open('Book.json', '+a',encoding="utf-8") as f:
-    for book in data:
-        books['id']=book["id"]
-        books['title']=book['title']
-        json.dump(books, f)
+with open("Movie.json", "+a", encoding="utf-8") as f:
+    for movie in data:
+        movies["id"] = movie["id"]
+        movies["title"] = movie["title"]
+        print(movies["title"])
+        json.dump(movies, f, indent=4, ensure_ascii=False)
         f.write(",\n")

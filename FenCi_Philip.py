@@ -2,9 +2,9 @@ import pynlpir
 import json
 
 pynlpir.open(encoding_errors="replace")
-Books_plot = {"title": "无人生还", "keyword": ""}
+Books_plot = {"title": "挪威的森林", "keyword": ""}
 
-with open("KeyWords_Philip.json", "a", encoding="utf-8") as jf:
+with open("KeyWords_Philip.json", "w", encoding="utf-8") as jf:
     jf.write("[")
 
 with open("Books_Philip.json", "r", encoding="utf-8") as json_file:
