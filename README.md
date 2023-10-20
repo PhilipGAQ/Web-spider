@@ -3,7 +3,7 @@
 ## 2023 fall-season Web 信息处理课程爬虫实验
 
 ### 相关资源
-[Wordvec2数据集](https://github.com/chatopera/Synonyms)
+[Word2Vec数据集](https://github.com/chatopera/Synonyms)
 
 [同/近义词表](https://github.com/guotong1988/chinese_dictionary)
 
@@ -26,6 +26,16 @@
 
 完成了对于书籍基本信息，作者介绍，剧情介绍等信息的爬取。
 
-2023.10.14
+2023.10.14 18：00-22：00
 
 第三次会议，使用两种分词方法完成了对关键词的初步提取。
+
+2023.10.18
+
+完成了利用Word2Vec数据集对于keywords中的近义词合并的工作。
+
+2023.10.20
+
+完成倒排索引表的初步搭建。
+
+
