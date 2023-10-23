@@ -1,5 +1,6 @@
 import synonyms
 import json
+import re
 
 Books_tags = {"title": "挪威的森林", "tags": ""}
 TagList = []
@@ -16,7 +17,7 @@ ExpandTag = []
 for tag in TagList:
     similar = synonyms.nearby(tag, 5)
     ExpandTag.append(similar[0])
-print(ExpandTag)
+#print(ExpandTag)
 # bar是接受该关键词的阈值
 # bar = 0.89
 cnt = 0
@@ -26,6 +27,19 @@ with open("TagsForBooks_Philip.json", "w", encoding="utf-8") as TagsJs:
         for book in Books:
             TempTags = []
             Books_tags["title"] = book["title"]
+            #加入国籍和作者信息
+            if book["writer"] is not None:
+                author=book["writer"]
+                if(author[0]=='['):
+                    match = re.search(r'\[(.*?)\](.*)', author)
+                    print(match.group(1))
+                    print(match.group(2))
+                    TempTags.append(match.group(1))
+                    TempTags.append(match.group(2))
+                else:
+                    print(author)
+                    TempTags.append(author)
+                    TempTags.append("中国")
             for keyword in book["keyword"]:
                 for TagGroup in ExpandTag:
                     if keyword in TagGroup:
@@ -43,4 +57,4 @@ with open("TagsForBooks_Philip.json", "w", encoding="utf-8") as TagsJs:
             json.dump(Books_tags, TagsJs, indent=4, ensure_ascii=False)
             TagsJs.write(",\n")
             cnt = cnt + 1
-            print(cnt)
+            #print(cnt)
