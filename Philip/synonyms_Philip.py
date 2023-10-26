@@ -36,6 +36,18 @@ with open("TagsForBooks_Philip.json", "w", encoding="utf-8") as TagsJs:
                     print(match.group(2))
                     TempTags.append(match.group(1))
                     TempTags.append(match.group(2))
+                elif (author[0]=='('):
+                    match = re.search(r'\((.*?)\)(.*)', author)
+                    print(match.group(1))
+                    print(match.group(2))
+                    TempTags.append(match.group(1))
+                    TempTags.append(match.group(2))
+                elif(author[0]=="（"):
+                    match = re.search(r'\（(.*?)\）(.*)', author)
+                    print(match.group(1))
+                    print(match.group(2))
+                    TempTags.append(match.group(1))
+                    TempTags.append(match.group(2))
                 else:
                     print(author)
                     TempTags.append(author)
