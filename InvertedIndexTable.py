@@ -1,6 +1,8 @@
 import json
 from collections import defaultdict
 import math
+from Compress_For import compress,depress
+import time
 
 
 def create_skip_pointers(threshold, docs,skip_list,skip_index):
@@ -13,6 +15,7 @@ def create_skip_pointers(threshold, docs,skip_list,skip_index):
         return [], []
 
 # Load the JSON file
+start_time = time.process_time()
 with open('TagsForBooks_Philip.json', 'r',encoding="utf-8") as f:
     data = json.load(f)
 
@@ -34,6 +37,7 @@ threshold = 10
 # Create a dictionary to store the skip pointers
 skip_pointers_index={}
 skip_pointers = {}
+k=8
 
 # Loop through each tag and its document list in the inverted index
 for tag, docs in inverted_index.items():
@@ -48,7 +52,8 @@ for tag, docs in inverted_index.items():
         skip_pointers[tag] = skip_list
         skip_pointers_index[tag]=skip_index
 
-
+Compressed_inverted_index={}
+Compressed_inverted_index=compress(inverted_index,k)
 # Print the inverted index and skip pointers
 '''print("Inverted Index:")
 print(inverted_index)
@@ -99,7 +104,7 @@ def infix_to_postfix(query):
         
 
     # Join the output listinto a single string and return it
-    print(' '.join(output))
+    #print(' '.join(output))
     return ' '.join(output)
 
 def bool_and(res1,res2,index1,index2):
@@ -161,8 +166,9 @@ def bool_search(query):
     result_and_pointers=[]
     result_and_index=[]
 
-    if len(terms) == 1:
-        results = set(inverted_index.get(terms[0], []))
+    if len(terms) == 2:
+        #results = set(inverted_index.get(terms[0], []))
+        results = depress(Compressed_inverted_index,terms[0],k)
         return sorted(results)
     else:
         cnt=0
@@ -191,7 +197,6 @@ def bool_search(query):
                 results = set(range(1, 1201))-results
                 result_and=list(results)
                 result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                print("index:",result_and_index)
                 cnt+=1
             else:
                 res = set(inverted_index.get(terms[cnt], []))
@@ -210,3 +215,5 @@ def bool_search(query):
     return sorted(results)
 
 print(bool_search(infix_to_postfix(input())))
+end_time = time.process_time()
+print("Time:",end_time-start_time)
