@@ -2,7 +2,7 @@ import synonyms
 import json
 import re
 
-Books_tags = {"title": "挪威的森林", "tags": ""}
+Books_tags = {"title": "挪威的森林", "tags": "","id": "1046265"}
 TagList = []
 TagList = []
 with open("BookTagsDouBan_Philip.json", "r", encoding="utf-8") as TagJson:
@@ -22,11 +22,12 @@ for tag in TagList:
 # bar = 0.89
 cnt = 0
 with open("TagsForBooks_Philip.json", "w", encoding="utf-8") as TagsJs:
-    with open("KeyWords_Philip.json", "r", encoding="utf-8") as KeywordJs:
+    with open("ResultOfFenci_Philip.json", "r", encoding="utf-8") as KeywordJs:
         Books = json.load(KeywordJs)
         for book in Books:
             TempTags = []
             Books_tags["title"] = book["title"]
+            Books_tags["id"]=book["id"]
             #加入国籍和作者信息
             if book["writer"] is not None:
                 author=book["writer"]
