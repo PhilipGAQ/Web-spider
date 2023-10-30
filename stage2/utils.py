@@ -12,7 +12,7 @@ Avg number of users connected per item: 16.4
 
 def collate_fn(batch_data):
     """This function will be used to pad the graph to max length in the batch
-       It will be used in the Dataloader
+    It will be used in the Dataloader
     """
     uids, iids, labels = [], [], []
     u_items, u_users, u_users_items, i_users = [], [], [], []
