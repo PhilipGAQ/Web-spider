@@ -13,24 +13,18 @@ def create_skip_pointers(threshold, docs,skip_list,skip_index):
     else:
         return [], []
 
-# Load the JSON file
 with open('TagsForBooks_Philip.json', 'r',encoding="utf-8") as f:
     data = json.load(f)
 
-# Create a dictionary to store the inverted index
 inverted_index = defaultdict(list)
 
-# Loop through each document and its tags
 for i, doc in enumerate(data):
     for tag in doc['tags']:
         # Add the document number to the inverted index for the current tag
         inverted_index[tag].append(i)
 
-# Sort the inverted index by tag
 inverted_index = dict(sorted(inverted_index.items()))
-print(inverted_index)
 
-# Set the threshold for skip pointers
 threshold = 10
 
 # Create a dictionary to store the skip pointers
@@ -44,7 +38,7 @@ for tag, docs in inverted_index.items():
     if len(docs) > threshold:
         # Calculate the skip interval
         skip_interval = int(math.sqrt(len(docs)))
-        # Create a list of skip pointers
+        # Create a list of skip 
         skip_list = [docs[i:i+skip_interval][-1] for i in range(0, len(docs), skip_interval)]
         skip_index = [i+skip_interval-1 for i in range(0, len(docs), skip_interval)]
         # Add the skip pointers to the dictionary
@@ -75,16 +69,14 @@ def infix_to_postfix(query):
 
     for token in tokens:
         if token in ['AND', 'OR', 'NOT']:
-            # Pop operators from the stack and add them to the output until
-            # we find an operator with lower precedence or the stack is empty
+
             while stack and stack[-1] != '(' and precedence[token] <= precedence.get(stack[-1], 0):
                 output.append(stack.pop())
             stack.append(token)
         elif token == '(':
             stack.append(token)
         elif token == ')':
-            # Pop operators from the stack and add them to the output until
-            # we find a left parenthesis or the stack is empty
+
             while stack and stack[-1] != '(':
                 output.append(stack.pop())
             if stack and stack[-1] == '(':
@@ -95,15 +87,12 @@ def infix_to_postfix(query):
             # Add terms to the output
             output.append(token)
 
-    # Pop any remaining operators from the stack and add them to the output
     while stack:
         if stack[-1] == '(':
             raise ValueError("Mismatched parentheses")
         output.append(stack.pop())
         
 
-    # Join the output listinto a single string and return it
-    #print(' '.join(output))
     return ' '.join(output)
 
 def bool_and(res1,res2,index1,index2):
@@ -157,77 +146,8 @@ def bool_and(res1,res2,index1,index2):
     return results
 
 
-#def bool_search(query):
-    # Split the query into individual terms
-    terms = query.split()
-    print(terms)
-    result_and=[]
-    result_and_pointers=[]
-    result_and_index=[]
 
-    if len(terms) == 1:
-        results = set(inverted_index.get(terms[0], []))
-        #results = depress(Compressed_inverted_index,terms[0],k)
-        return sorted(results)
-    else:
-        cnt=0
-        res1 = set(inverted_index.get(terms[cnt], []))
-        #print(res1)
-        if terms[cnt+1]=="NOT":
-            results = set(range(1, 1201))-res1
-            result_and=list(results)
-            result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-            cnt+=2
-        else:
-            res2 = set(inverted_index.get(terms[cnt+1], []))
-            #print(res2)
-            if terms[cnt+2]=="AND":
-                result_and = bool_and(inverted_index.get(terms[cnt],[]),inverted_index.get(terms[cnt+1],[]),skip_pointers_index.get(terms[cnt],[]),skip_pointers_index.get(terms[cnt+1],[]))
-                #print(result_and)
-                result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                results=set(result_and)
-            elif terms[cnt+2]=="OR":
-                results = res1 | res2
-                result_and=list(results)
-                result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-            else :
-                print("Invalid query")
-                return []
-            cnt+=3
-        while cnt<len(terms):
-            if terms[cnt]=="NOT":
-                results = set(range(1, 1201))-results
-                result_and=list(results)
-                result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                cnt+=1
-            else:
-                res = set(inverted_index.get(terms[cnt], []))
-                if terms[cnt+1]=="AND":
-                    result_and = bool_and(inverted_index.get(terms[cnt],[]),result_and,skip_pointers_index.get(terms[cnt],[]),result_and_index)
-                    result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                    results=set(result_and)
-                    cnt+=2
-                elif terms[cnt+1]=="OR":
-                    results = results | res
-                    result_and=list(results)
-                    result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                    cnt+=2
-                else :
-                    res2=set(inverted_index.get(terms[cnt+1], []))
-                    if terms[cnt+1]=="AND":
-                        result_and = bool_and(inverted_index.get(terms[cnt],[]),result_and,skip_pointers_index.get(terms[cnt],[]),result_and_index)
-                        result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                        results=set(result_and)
-                        cnt+=2
-                    elif terms[cnt+1]=="OR":
-                        res = res1 | res2
-                        result_and=list(results)
-                        result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                        cnt+=2
-                    print("Invalid query")
-                    return []
-                cnt+=2
-    return sorted(results)
+#results = depress(Compressed_inverted_index,terms[0],k)
 
 
 def bool_search(tokens):
@@ -282,7 +202,9 @@ def bool_search(tokens):
 
     if len(stack) == 1:
         return stack[0]
-
+print("请输入布尔查询表达式")
+print("示例：中国 AND 小说 AND ( 金庸 OR 三毛 )注意用空格间隔开每个词，布尔运算符要大写")
+print('\n')
 final_result=sorted(bool_search(infix_to_postfix(input())))
 print(final_result)
 # Load data from JSON file
@@ -290,7 +212,12 @@ with open('Books_Philip.json', 'r',encoding='utf-8') as f:
     data = json.load(f)
 
 # Print corresponding data for each index in final_result
-for index in final_result:
-    print(data[index])
-    print('\n')
+with open('output_book_72.txt', 'w',encoding="utf-8") as f:
+    for index in final_result:
+        for key, value in data[index].items():
+            f.write(str(key) + ':' + str(value))
+            f.write('\n')
+        f.write('\n')
+        f.write('###############################################')
+        f.write('\n')
 

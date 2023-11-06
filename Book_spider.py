@@ -50,6 +50,7 @@ def assign_none(book):
     "writer-intro":None,
     "id_recommendations": None
     }
+    return book
     
 # open the file to read and to save
 with open("Book_id.csv", mode="r", encoding="utf-8") as booklist:
@@ -71,7 +72,7 @@ with open("Book_id.csv", mode="r", encoding="utf-8") as booklist:
         # title
         title = soup.find("span", attrs={"property": "v:itemreviewed"})
         if title is None:
-            assign_none(book)
+            book=assign_none(book)
             print(str(row) + " is None")
             cnt+=1
             with open("Books_Philip.json", "a", encoding="utf-8") as json_file:
