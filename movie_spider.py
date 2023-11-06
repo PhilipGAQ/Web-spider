@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import csv
 import json
+import time
 
 # 为电影创建一个json字典
 movie = {
@@ -29,7 +30,7 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.31"
 }
 cookies ={
-    "Cookie": 'bid=UUJyGxdUAvE; __utmc=30149280; __utmz=30149280.1695283879.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); ll="118183"; ap_v=0,6.0; viewed="1046265_1017143_1084336_10466265_2256039_1007305"; apiKey=; dbcl2="274656538:3TdXAga9IPc"; ck=k-Tx; frodotk_db="a537afb8776aee52efa70f296640caf6"; push_noty_num=0; push_doumail_num=0; __utma=30149280.1842746003.1695283879.1695551068.1695556724.6; __utmv=30149280.27465; __utmt_douban=1; _pk_ref.100001.8cb4=%5B%22%22%2C%22%22%2C1695557428%2C%22https%3A%2F%2Fbook.douban.com%2F%22%5D; _pk_id.100001.8cb4=c54a4c010270bb6c.1695557428.; _pk_ses.100001.8cb4=1; __yadk_uid=UW01ZWrMf8VOdGNYSersEnPau2Hod9ry; __utmt=1; __utmb=30149280.26.9.1695557430361'
+    "Cookie": 'll="118183"; bid=ozDG5P03_RM; __utmc=30149280; frodotk_db="49e7f3024834c33bddb7d906d89e49b1"; push_noty_num=0; push_doumail_num=0; ap_v=0,6.0; __utma=30149280.1183179111.1699253418.1699255660.1699271227.3; __utmz=30149280.1699271227.3.2.utmcsr=accounts.douban.com|utmccn=(referral)|utmcmd=referral|utmcct=/; _pk_ref.100001.8cb4=%5B%22%22%2C%22%22%2C1699271349%2C%22https%3A%2F%2Fcn.bing.com%2F%22%5D; _pk_id.100001.8cb4=be6e56953b997e28.1699271349.; _pk_ses.100001.8cb4=1; __utmt=1; dbcl2="275747579:X+D9PSxlO0U"; ck=BEwq; __utmv=30149280.27574; __utmb=30149280.8.10.1699271227'
 }
 
 def assign_none(movie):
@@ -49,6 +50,9 @@ def assign_none(movie):
     "duration": None,
     "id_recommendations": None
 }
+    return movie
+
+
     
 # open the file to read and to save
 with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
@@ -57,6 +61,7 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
     csv_reader = csv.reader(movielist)
     cnt=1
     for row in csv_reader:
+        time.sleep(1)
         # get the full url
         url_head = "https://movie.douban.com/subject/"
         url_tail = str(row)
@@ -70,7 +75,7 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
         # title
         title = soup.find("span", attrs={"property": "v:itemreviewed"})
         if title is None:
-            assign_none(movie)
+            movie=assign_none(movie)
             print(str(row) + " is None")
             cnt+=1
             with open("Movies_Philip.json", "a", encoding="utf-8") as json_file:
@@ -160,6 +165,7 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
             plot = soup.find("span", attrs={"property": "v:summary"})
             if plot is not None:
                 print(plot.text)
+                movie["plot"] = str(plot.text)
             else:
                 print("Couldn't find intro, whose url=", url_tail)
         # cast

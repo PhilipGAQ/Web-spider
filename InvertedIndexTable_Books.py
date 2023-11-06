@@ -24,7 +24,6 @@ for i, doc in enumerate(data):
         inverted_index[tag].append(i)
 
 inverted_index = dict(sorted(inverted_index.items()))
-print(inverted_index)
 
 threshold = 10
 
@@ -204,8 +203,7 @@ def bool_search(tokens):
     if len(stack) == 1:
         return stack[0]
 print("请输入布尔查询表达式")
-print('\n')
-print("中国 AND 小说 AND ( 金庸 OR 三毛 )注意用空格间隔开每个词，布尔运算符要大写")
+print("示例：中国 AND 小说 AND ( 金庸 OR 三毛 )注意用空格间隔开每个词，布尔运算符要大写")
 print('\n')
 final_result=sorted(bool_search(infix_to_postfix(input())))
 print(final_result)
@@ -214,7 +212,7 @@ with open('Books_Philip.json', 'r',encoding='utf-8') as f:
     data = json.load(f)
 
 # Print corresponding data for each index in final_result
-with open('output.txt', 'w',encoding="utf-8") as f:
+with open('output_book_72.txt', 'w',encoding="utf-8") as f:
     for index in final_result:
         for key, value in data[index].items():
             f.write(str(key) + ':' + str(value))
