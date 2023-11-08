@@ -15,51 +15,51 @@ movie = {
     "genre": ["Drama", "Crime"],
     "country": ["USA"],
     "language": ["English"],
-    "release date":"1994-09-10",
-    "aka":"月黑高飞(港)",
-    "IMDb":"tt0111161",
+    "release date": "1994-09-10",
+    "aka": "月黑高飞(港)",
+    "IMDb": "tt0111161",
     "rating": 9.3,
     "plot": "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
     "cast": ["Tim Robbins", "Morgan Freeman"],
     "duration": 142,  # 电影时长（分钟）
-    "id_recommendations": ["114514"]
+    "id_recommendations": ["114514"],
 }
 
 # 反爬虫策略
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.31"
 }
-cookies ={
+cookies = {
     "Cookie": 'll="118183"; bid=ozDG5P03_RM; __utmc=30149280; frodotk_db="49e7f3024834c33bddb7d906d89e49b1"; push_noty_num=0; push_doumail_num=0; ap_v=0,6.0; __utma=30149280.1183179111.1699253418.1699255660.1699271227.3; __utmz=30149280.1699271227.3.2.utmcsr=accounts.douban.com|utmccn=(referral)|utmcmd=referral|utmcct=/; _pk_ref.100001.8cb4=%5B%22%22%2C%22%22%2C1699271349%2C%22https%3A%2F%2Fcn.bing.com%2F%22%5D; _pk_id.100001.8cb4=be6e56953b997e28.1699271349.; _pk_ses.100001.8cb4=1; __utmt=1; dbcl2="275747579:X+D9PSxlO0U"; ck=BEwq; __utmv=30149280.27574; __utmb=30149280.8.10.1699271227'
 }
 
+
 def assign_none(movie):
     movie = {
-    "title": None,
-    "year": None,
-    "director": None,
-    "genre": None,
-    "country": None,
-    "language": None,
-    "release date": None,
-    "aka": None,
-    "IMDb": None,
-    "rating": None,
-    "plot": None,
-    "cast": None,
-    "duration": None,
-    "id_recommendations": None
-}
+        "title": None,
+        "year": None,
+        "director": None,
+        "genre": None,
+        "country": None,
+        "language": None,
+        "release date": None,
+        "aka": None,
+        "IMDb": None,
+        "rating": None,
+        "plot": None,
+        "cast": None,
+        "duration": None,
+        "id_recommendations": None,
+    }
     return movie
 
 
-    
 # open the file to read and to save
 with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
     # read the file
     open("Movies_Philip.json", "w").close()
     csv_reader = csv.reader(movielist)
-    cnt=1
+    cnt = 1
     for row in csv_reader:
         time.sleep(1)
         # get the full url
@@ -67,7 +67,7 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
         url_tail = str(row)
         url = url_head + url_tail[2:-2]
         # print(url)
-        response = requests.get(url, headers=headers,cookies=cookies)
+        response = requests.get(url, headers=headers, cookies=cookies)
         soup = BeautifulSoup(response.text, "html.parser")
         # 读取title year director genre rating plot cast duration
         movie["num"] = cnt
@@ -75,14 +75,16 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
         # title
         title = soup.find("span", attrs={"property": "v:itemreviewed"})
         if title is None:
-            movie=assign_none(movie)
+            movie = assign_none(movie)
+            movie["num"] = cnt
+            movie["id"] = url_tail[2:-2]
             print(str(row) + " is None")
-            cnt+=1
+            cnt += 1
             with open("Movies_Philip.json", "a", encoding="utf-8") as json_file:
                 json.dump(movie, json_file, indent=4, ensure_ascii=False)
                 json_file.write(",\n")
             continue
-        else: 
+        else:
             print(title.text)
             movie["title"] = str(title.text)
 
@@ -107,7 +109,9 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
         movie["genre"] = str(genre_text)
 
         # country
-        country = soup.find("span", attrs={"class": "pl"}, text="制片国家/地区:").next_sibling.strip()
+        country = soup.find(
+            "span", attrs={"class": "pl"}, text="制片国家/地区:"
+        ).next_sibling.strip()
         country_list = country.split("/")
         print(country_list)
         movie["country"] = str(country_list)
@@ -133,7 +137,7 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
         aka = soup.find("span", attrs={"class": "pl"}, text="又名:")
         if aka is None:
             movie["aka"] = None
-        else :
+        else:
             aka_list = aka.next_sibling.strip().split("/")
             print(aka_list)
             movie["aka"] = str(aka_list)
@@ -142,7 +146,7 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
         IMDb = soup.find("span", attrs={"class": "pl"}, text="IMDb:")
         if IMDb is None:
             movie["IMDb"] = None
-        else :
+        else:
             IMDb_list = IMDb.next_sibling.strip()
             print(IMDb_list)
             movie["IMDb"] = str(IMDb_list)
@@ -150,7 +154,7 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
         # rating
         rating = soup.find("strong", attrs={"class": "ll rating_num"})
         if rating is None:
-                movie["rating"] = None
+            movie["rating"] = None
         else:
             print(rating.text)
             movie["rating"] = str(rating.text)
@@ -181,10 +185,11 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
             print(duration.text)
             movie["duration"] = str(duration.text)
         else:
-            duration=soup.find("span", attrs={"class": "pl"}, text={"单集片长:","片长:"}).next_sibling.strip()
+            duration = soup.find(
+                "span", attrs={"class": "pl"}, text={"单集片长:", "片长:"}
+            ).next_sibling.strip()
             print(duration)
             movie["duration"] = str(duration)
-
 
         # id_recommendations
         patten = r"\d+/"
@@ -204,7 +209,7 @@ with open("Movie_id.csv", mode="r", encoding="utf-8") as movielist:
             print(id_recommendations)
             movie["id_recommendations"] = str(id_recommendations)
 
-        cnt+=1
+        cnt += 1
         # save the movie
         with open("Movies_Philip.json", "a", encoding="utf-8") as json_file:
             json.dump(movie, json_file, indent=4, ensure_ascii=False)
