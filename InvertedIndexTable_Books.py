@@ -47,6 +47,7 @@ for tag, docs in inverted_index.items():
 
 '''Compressed_inverted_index={}
 Compressed_inverted_index=compress(inverted_index,k)'''
+
 # Print the inverted index and skip pointers
 '''print("Inverted Index:")
 print(inverted_index)
@@ -92,8 +93,10 @@ def infix_to_postfix(query):
             raise ValueError("Mismatched parentheses")
         output.append(stack.pop())
         
-
-    return ' '.join(output)
+    if(len(output)==1):
+        return output
+    else:
+        return ' '.join(output)
 
 def bool_and(res1,res2,index1,index2):
     results = []
@@ -147,15 +150,16 @@ def bool_and(res1,res2,index1,index2):
 
 
 
-#results = depress(Compressed_inverted_index,terms[0],k)
+
 
 
 def bool_search(tokens):
 
     stack = []
     stack_index=[]
+    if len(tokens)==1:
+        return inverted_index.get(tokens[0],[])
     tokens=tokens.split()
-    print(tokens)
     result_and=[]
     result_and_pointers=[]
     result_and_index=[]
@@ -165,6 +169,7 @@ def bool_search(tokens):
             b=stack.pop()
             if type(b) is not set:
                 b_pointers_index=skip_pointers_index.get(b,[])
+                #results = depress(Compressed_inverted_index,b,k)  #使用时调用函数解码
                 b = inverted_index.get(b,[])[:]
             else :
                 b_pointers_index=stack_index.pop()
@@ -211,7 +216,7 @@ print(final_result)
 with open('Books_Philip.json', 'r',encoding='utf-8') as f:
     data = json.load(f)
 
-# Print corresponding data for each index in final_result
+'''# Print corresponding data for each index in final_result
 with open('output_book_72.txt', 'w',encoding="utf-8") as f:
     for index in final_result:
         for key, value in data[index].items():
@@ -219,5 +224,5 @@ with open('output_book_72.txt', 'w',encoding="utf-8") as f:
             f.write('\n')
         f.write('\n')
         f.write('###############################################')
-        f.write('\n')
+        f.write('\n')'''
 
