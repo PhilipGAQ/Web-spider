@@ -102,9 +102,10 @@ def infix_to_postfix(query):
         output.append(stack.pop())
         
 
-    # Join the output listinto a single string and return it
-    #print(' '.join(output))
-    return ' '.join(output)
+    if(len(output)==1):
+        return output
+    else:
+        return ' '.join(output)
 
 def bool_and(res1,res2,index1,index2):
     results = []
@@ -157,83 +158,12 @@ def bool_and(res1,res2,index1,index2):
     return results
 
 
-#def bool_search(query):
-    # Split the query into individual terms
-    terms = query.split()
-    print(terms)
-    result_and=[]
-    result_and_pointers=[]
-    result_and_index=[]
-
-    if len(terms) == 1:
-        results = set(inverted_index.get(terms[0], []))
-        #results = depress(Compressed_inverted_index,terms[0],k)
-        return sorted(results)
-    else:
-        cnt=0
-        res1 = set(inverted_index.get(terms[cnt], []))
-        #print(res1)
-        if terms[cnt+1]=="NOT":
-            results = set(range(1, 1201))-res1
-            result_and=list(results)
-            result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-            cnt+=2
-        else:
-            res2 = set(inverted_index.get(terms[cnt+1], []))
-            #print(res2)
-            if terms[cnt+2]=="AND":
-                result_and = bool_and(inverted_index.get(terms[cnt],[]),inverted_index.get(terms[cnt+1],[]),skip_pointers_index.get(terms[cnt],[]),skip_pointers_index.get(terms[cnt+1],[]))
-                #print(result_and)
-                result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                results=set(result_and)
-            elif terms[cnt+2]=="OR":
-                results = res1 | res2
-                result_and=list(results)
-                result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-            else :
-                print("Invalid query")
-                return []
-            cnt+=3
-        while cnt<len(terms):
-            if terms[cnt]=="NOT":
-                results = set(range(1, 1201))-results
-                result_and=list(results)
-                result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                cnt+=1
-            else:
-                res = set(inverted_index.get(terms[cnt], []))
-                if terms[cnt+1]=="AND":
-                    result_and = bool_and(inverted_index.get(terms[cnt],[]),result_and,skip_pointers_index.get(terms[cnt],[]),result_and_index)
-                    result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                    results=set(result_and)
-                    cnt+=2
-                elif terms[cnt+1]=="OR":
-                    results = results | res
-                    result_and=list(results)
-                    result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                    cnt+=2
-                else :
-                    res2=set(inverted_index.get(terms[cnt+1], []))
-                    if terms[cnt+1]=="AND":
-                        result_and = bool_and(inverted_index.get(terms[cnt],[]),result_and,skip_pointers_index.get(terms[cnt],[]),result_and_index)
-                        result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                        results=set(result_and)
-                        cnt+=2
-                    elif terms[cnt+1]=="OR":
-                        res = res1 | res2
-                        result_and=list(results)
-                        result_and_pointers,result_and_index=create_skip_pointers(10,result_and,result_and_pointers,result_and_index)
-                        cnt+=2
-                    print("Invalid query")
-                    return []
-                cnt+=2
-    return sorted(results)
-
-
 def bool_search(tokens):
 
     stack = []
     stack_index=[]
+    if len(tokens)==1:
+        return inverted_index.get(tokens[0],[])
     tokens=tokens.split()
     print(tokens)
     result_and=[]
@@ -290,7 +220,12 @@ with open('Movies_Philip.json', 'r',encoding='utf-8') as f:
     data = json.load(f)
 
 # Print corresponding data for each index in final_result
-for index in final_result:
-    print(data[index])
-    print('\n')
+with open('output_movie_72.txt', 'w',encoding="utf-8") as f:
+    for index in final_result:
+        for key, value in data[index].items():
+            f.write(str(key) + ':' + str(value))
+            f.write('\n')
+        f.write('\n')
+        f.write('###############################################')
+        f.write('\n')
 
