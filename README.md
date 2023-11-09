@@ -8,6 +8,7 @@
 [同/近义词表](https://github.com/guotong1988/chinese_dictionary)
 
 ### 实验进度日志
+
 <span style="color:blue">2023.9.22 19：00-22：30</span>
 
 第一次会议，共同仔细阅读实验文档统一意见，搭建实验仓库，商讨后续分工安排。
