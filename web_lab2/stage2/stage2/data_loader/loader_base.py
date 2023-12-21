@@ -29,7 +29,7 @@ class DataLoaderBase(object):
         user = []
         item = []
         user_dict = dict()
-
+        #filename=os.path.join('Web_lab2','stage2','stage2','data','Douban','train.txt')
         lines = open(filename, 'r').readlines()
         for l in lines:
             tmp = l.strip()

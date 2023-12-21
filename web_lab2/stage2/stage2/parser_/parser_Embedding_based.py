@@ -9,7 +9,7 @@ def parse_args():
 
     parser.add_argument('--data_name', nargs='?', default='Douban',
                         help='Choose a dataset')
-    parser.add_argument('--data_dir', nargs='?', default='data/',
+    parser.add_argument('--data_dir', nargs='?', default='data\\',
                         help='Input data path.')
     
     parser.add_argument("--cuda", action='store_true',
@@ -49,7 +49,7 @@ def parse_args():
     parser.add_argument('--stopping_steps', type=int, default=10,
                         help='Number of epoch for early stopping')
 
-    parser.add_argument('--print_every', type=int, default=1,
+    parser.add_argument('--print_every', type=int, default=20,
                         help='Iter interval of printing CF loss.')
     parser.add_argument('--evaluate_every', type=int, default=10,
                         help='Epoch interval of evaluating CF.')
