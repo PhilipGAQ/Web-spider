@@ -31,7 +31,7 @@ class DataLoader(DataLoaderBase):
         #    并将原三元组和逆向三元组拼接为新的DataFrame，保存在 self.kg_data 中。
         inverse_kg_data = kg_data.copy()
         inverse_kg_data['h'] = kg_data['t']
-        inverse_kg_data['r'] = kg_data['r'] + self.n_relations
+        inverse_kg_data['r'] = kg_data['r'] + kg_data['r'].nunique()
         inverse_kg_data['t'] = kg_data['h']
         self.kg_data=pd.concat([kg_data, inverse_kg_data], ignore_index=True)
 
