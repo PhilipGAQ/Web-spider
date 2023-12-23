@@ -91,17 +91,20 @@ class Embedding_based(nn.Module):
         neg_t_embed = self.entity_embed(neg_t)                                          # (kg_batch_size, embed_dim)
 
         # 5. 对关系嵌入，头实体嵌入，尾实体嵌入，负采样的尾实体嵌入进行L2范数归一化
-        r_embed = r_embed/ np.linalg.norm(r_embed, ord=2, axis=-1, keepdims=True)
-        h_embed = h_embed/np.linalg.norm(h_embed, ord=2, axis=-1, keepdims=True)
-        pos_t_embed = pos_t_embed/np.linalg.norm(pos_t_embed, ord=2, axis=-1, keepdims=True)
-        neg_t_embed = neg_t_embed/np.linalg.norm(neg_t_embed, ord=2, axis=-1, keepdims=True)
+
+
+        r_embed = r_embed/torch.norm(r_embed,dim=1, keepdim=True)
+        h_embed =h_embed/torch.norm(h_embed,dim=1, keepdim=True)
+        pos_t_embed = pos_t_embed/torch.norm(pos_t_embed,dim=1, keepdim=True)
+        neg_t_embed = neg_t_embed/torch.norm(neg_t_embed,dim=1, keepdim=True)
 
         # 6. 分别计算正样本三元组 (h_embed, r_embed, pos_t_embed) 和负样本三元组 (h_embed, r_embed, neg_t_embed) 的得分
-        pos_score =np.linalg.norm(h_embed + r_embed - pos_t_embed, ord=2)                                                                # (kg_batch_size)
-        neg_score =np.linalg.norm(h_embed + r_embed - neg_t_embed, ord=2)                                          # (kg_batch_size)
+        pos_score =torch.norm(h_embed + r_embed - pos_t_embed, dim=1, p=2)                                                              # (kg_batch_size)
+        neg_score =torch.norm(h_embed + r_embed - neg_t_embed, dim=1, p=2)                                       # (kg_batch_size)
 
         # 7. 使用 BPR Loss 进行优化，尽可能使负样本的得分大于正样本的得分
-        kg_loss = -torch.log(nn.Sigmoid(pos_score - neg_score)).sum()
+        sigmoid=nn.Sigmoid()
+        kg_loss = -torch.log(sigmoid(pos_score - neg_score)).sum()
 
         l2_loss = _L2_loss_mean(h_embed) + _L2_loss_mean(r_embed) + _L2_loss_mean(pos_t_embed) + _L2_loss_mean(neg_t_embed)
         loss = kg_loss + self.kg_l2loss_lambda * l2_loss
@@ -122,8 +125,8 @@ class Embedding_based(nn.Module):
         item_neg_kg_embed = self.entity_embed(item_neg_ids)                             # (cf_batch_size, embed_dim)
         
         # 8. 为 物品嵌入 注入 实体嵌入的语义信息
-        item_pos_cf_embed =   torch.cat((item_pos_embed, item_pos_kg_embed), dim=1)                                                          # (cf_batch_size, embed_dim)
-        item_neg_cf_embed =   torch.cat((item_neg_embed,item_neg_kg_embed),dim=1)                                                         # (cf_batch_size, embed_dim)
+        item_pos_cf_embed =item_pos_embed*item_pos_kg_embed                                                        # (cf_batch_size, embed_dim)
+        item_neg_cf_embed = item_neg_embed*item_neg_kg_embed                                                   # (cf_batch_size, embed_dim)
 
         pos_score = torch.sum(user_embed * item_pos_cf_embed, dim=1)                    # (cf_batch_size)
         neg_score = torch.sum(user_embed * item_neg_cf_embed, dim=1)                    # (cf_batch_size)
@@ -170,7 +173,7 @@ class Embedding_based(nn.Module):
         item_kg_embed = self.entity_embed(item_ids)                                     # (n_items, embed_dim)
 
         # 9. 为 物品嵌入 注入 实体嵌入的语义信息
-        item_cf_embed =       torch.cat((item_embed,item_kg_embed),dim=1)                                                          # (n_items, embed_dim)
+        item_cf_embed = item_embed*item_kg_embed                                                      # (n_items, embed_dim)
 
         cf_score = torch.matmul(user_embed, item_cf_embed.transpose(0, 1))              # (n_users, n_items)
         
